@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="kk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ертегіден алгоритмге</title>
+<style>
+:root{--ink:#3b2a1e;--cream:#fff8e8;--gold:#d99a28;--red:#9f3d32;--green:#3d7551;--blue:#39708b;--paper:#fffdf6}
+*{box-sizing:border-box} body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:#f5ead1}
+header{background:linear-gradient(135deg,#5b2d22,#9f3d32);color:#fff;padding:18px 20px;position:sticky;top:0;z-index:5;box-shadow:0 3px 12px #0003}
+.wrap{max-width:1100px;margin:auto}.top{display:flex;align-items:center;gap:14px}.logo{font-size:34px}.title{font-size:clamp(22px,4vw,36px);font-weight:900}.sub{opacity:.9}
+main{padding:24px 16px 60px}.hero{text-align:center;padding:32px 15px}.hero h1{font-size:clamp(30px,6vw,55px);margin:5px}.hero p{font-size:18px}
+.books{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:18px}.book{border:0;border-radius:18px;padding:22px 12px;min-height:190px;color:white;cursor:pointer;box-shadow:0 8px 18px #0002;transition:.2s;font:inherit}.book:hover{transform:translateY(-5px)}.book .emoji{font-size:54px}.book b{display:block;font-size:20px;margin-top:12px}.book:nth-child(1){background:#a44b3f}.book:nth-child(2){background:#386b55}.book:nth-child(3){background:#a6782e}.book:nth-child(4){background:#436b89}.book:nth-child(5){background:#79598d}
+.hidden{display:none!important}.story{background:var(--paper);border-radius:24px;padding:20px;box-shadow:0 8px 28px #0002}.storyhead{display:flex;align-items:center;gap:15px}.storyhead .big{font-size:55px}.storyhead h2{margin:0;font-size:30px}
+.back,.tab,.choice,.action{border:0;border-radius:12px;padding:11px 15px;cursor:pointer;font-weight:750;font-size:15px}.back{background:#ead8b2;color:#553d25;margin-bottom:14px}.tabs{display:flex;gap:8px;overflow:auto;padding:15px 0}.tab{background:#f1e5cb;white-space:nowrap}.tab.active{background:var(--red);color:#fff}.panel{padding:18px;background:#fff9eb;border:2px solid #ecd9b3;border-radius:16px;min-height:280px}.panel h3{font-size:23px;margin-top:0}
+.ill{text-align:center;font-size:80px;background:linear-gradient(#dff3ff,#f8e4b8);border-radius:15px;padding:18px;margin:12px 0}.summary{background:#fff2c9;padding:13px;border-left:5px solid var(--gold);border-radius:9px}
+.flow{display:flex;flex-direction:column;align-items:center;gap:8px}.node{padding:12px 18px;background:#fff;border:3px solid var(--blue);border-radius:8px;text-align:center;max-width:520px;width:90%}.node.start{border-radius:999px;background:#e3f3e8;border-color:var(--green)}.node.decision{clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);padding:35px 55px;background:#fff0bd;border:0;min-height:105px;display:flex;align-items:center;justify-content:center}.arrow{font-size:26px;color:#8d6426}.steps{display:grid;gap:9px}.step{background:white;border:2px solid #d8c7a6;border-radius:10px;padding:12px;cursor:grab}.step.selected{border-color:var(--red);background:#ffe8e4}.controls{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.action{background:var(--green);color:#fff}.action.secondary{background:#846334}.msg{font-weight:800;padding:10px;margin-top:10px;border-radius:10px}.good{background:#dff4e4;color:#275b36}.bad{background:#ffe1dc;color:#8a3027}
+.quiz{display:grid;gap:10px}.choice{background:#fff;border:2px solid #dfcda9;text-align:left}.choice:hover{background:#fff1c8}.legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}.legend div{background:#fff;padding:14px;border-radius:12px;text-align:center}.shape{font-size:35px}
+footer{text-align:center;padding:25px;color:#735d42}.badge{display:inline-block;background:#f5c650;padding:8px 14px;border-radius:999px;font-weight:900}
+@media(max-width:600px){.story{padding:12px}.panel{padding:13px}.storyhead h2{font-size:24px}.node.decision{padding:30px 40px}.tabs{margin:0 -5px}}
+</style>
+</head>
+<body>
+<header><div class="wrap top"><div class="logo">📚</div><div><div class="title">Ертегіден алгоритмге</div><div class="sub">Қазақ ертегілерін оқы, алгоритмін зертте, ойна!</div></div></div></header>
+<main class="wrap">
+<section id="home">
+ <div class="hero"><h1>✨ Ертегілер кітапханасы ✨</h1><p>Ертегіні таңда да, оқиға желісін алгоритмге айналдыр!</p></div>
+ <div class="books" id="books"></div>
+</section>
+<section id="story" class="story hidden">
+ <button class="back" onclick="goHome()">← Кітапханаға қайту</button>
+ <div class="storyhead"><div class="big" id="storyEmoji"></div><div><h2 id="storyTitle"></h2><span class="badge">Алгоритмдік ертегі</span></div></div>
+ <div class="tabs" id="tabs"></div>
+ <div class="panel" id="panel"></div>
+</section>
+</main>
+<footer>🌿 Қазақ ертегісі + информатика = алгоритмдік ойлау 🌿</footer>
+<script>
+const tales=[
+ {title:"Мақта қыз бен мысық",emoji:"👧🐈",text:"Мақта қыз үйін жинап жүріп мейіз тауып алады. Ол мысығын шақырады, бірақ мысық келмейді. Мақта қыз мейізді өзі жеп қояды. Ренжіген мысық қатықты төгеді. Оқиға барысында мысық сүт іздеп, сиырға, ағашқа, қыздарға, дүкеншіге және тауыққа барады. Тапсырмаларды орындап, соңында сүт әкеліп, қатықты қайтарады.",summary:"Мысық жасаған қатесін түзету үшін бірнеше байланысты тапсырманы ретімен орындайды.",steps:["Мақта қыз мейіз тауып алды","Мысықты шақырды","Мысық келмеді","Мақта қыз мейізді жеді","Мысық қатықты төкті","Мысық тапсырмаларды орындады","Сүт әкеліп, қатықты қайтарды"]},
+ {title:"Ер Төстік",emoji:"🏹🐎",text:"Ер Төстік — ержүрек батыр туралы қазақ ертегісі. Ол жоғалған ағаларын іздеп ұзақ сапарға шығады. Жолда түрлі сынақтардан өтіп, достар табады. Ақылы, батылдығы және серіктерінің көмегі арқылы қиындықтарды жеңіп, мақсатына жетеді.",summary:"Батыр мақсат қояды, сапарға шығады, кедергілерден өтіп, нәтижеге жетеді.",steps:["Ер Төстік ағаларын іздеуге шешім қабылдады","Сапарға шықты","Жолда серіктер кездестірді","Қиын сынақтарға тап болды","Серіктерімен бірге әрекет етті","Кедергілерді жеңді","Мақсатына жетті"]},
+ {title:"Қаңбақ шал",emoji:"👴🌾",text:"Қаңбақ шал — тапқырлығы арқылы қиындықтарды жеңетін кейіпкер. Әлсіз көрінгенімен, ол ақылын пайдаланып, өзінен күшті қарсыластарын айламен жеңеді.",summary:"Күштен гөрі ақыл мен тапқырлықтың маңызды екенін көрсететін оқиға.",steps:["Қаңбақ шал жолға шықты","Қауіпті қарсыласқа кездесті","Қарсылас күшіне сенді","Шал айла ойлап тапты","Айласын іске асырды","Қарсылас алданды","Қаңбақ шал аман қалды"]},
+ {title:"Алдар көсе",emoji:"🧔🎭",text:"Алдар көсе — қазақ ауыз әдебиетіндегі тапқыр кейіпкер. Ол сараңдық пен әділетсіздікті әжуалап, қиын жағдайлардан ақылымен жол табады.",summary:"Алдар мәселені байқап, айла ойлап, әрекет жасап, тапқырлығымен нәтижеге жетеді.",steps:["Алдар көсе жолға шықты","Әділетсіз жағдайды байқады","Мәселені шешудің амалын ойлады","Айла қолданды","Қарсы тарап шешім қабылдады","Алдардың айласы іске асты","Оқиға аяқталды"]},
+ {title:"Түлкі мен ешкі",emoji:"🦊🐐",text:"Түлкі абайсызда құдыққа түсіп кетеді. Құдықтан шыға алмай тұрғанда ешкі келеді. Түлкі құдықтағы суды мақтайды. Ешкі төмен түседі. Түлкі ешкінің үстіне шығып, құдықтан секіріп кетеді.",summary:"Оқиғадағы шешім мен оның салдарын шартты алгоритм арқылы көрсетуге ыңғайлы ертегі.",steps:["Түлкі құдыққа түсіп кетті","Құдықтан шыға алмады","Ешкі құдыққа келді","Түлкі суды мақтады","Ешкі құдыққа түсті","Түлкі ешкінің үстіне шықты","Түлкі құдықтан шықты"]}
+];
+const tabNames=["📖 Ертегіні оқы","🔀 Алгоритмін көр","🧩 Өзің құрастыр","🐞 Қатені тап","🔷 Блок-схема","🔍 Ертегіні тап","❓ Жоғалған қадам"];
+let current=0, active=0;
+function init(){document.getElementById("books").innerHTML=tales.map((t,i)=>`<button class="book" onclick="openStory(${i})"><span class="emoji">${t.emoji}</span><b>${t.title}</b><span>Ашу →</span></button>`).join("")}
+function openStory(i){current=i;active=0;home.classList.add("hidden");story.classList.remove("hidden");storyEmoji.textContent=tales[i].emoji;storyTitle.textContent=tales[i].title;renderTabs();render();scrollTo(0,0)}
+function goHome(){story.classList.add("hidden");home.classList.remove("hidden");scrollTo(0,0)}
+function renderTabs(){tabs.innerHTML=tabNames.map((n,i)=>`<button class="tab ${i===active?"active":""}" onclick="setTab(${i})">${n}</button>`).join("")}
+function setTab(i){active=i;renderTabs();render()}
+function render(){
+ const t=tales[current];
+ if(active===0) panel.innerHTML=`<h3>📖 ${t.title}</h3><div class="ill">${t.emoji} ✨</div><p>${t.text}</p><div class="summary"><b>Қысқаша мазмұны:</b> ${t.summary}</div>`;
+ if(active===1) panel.innerHTML=`<h3>🔀 Оқиға алгоритмі</h3><p>Қадамдарды жоғарыдан төмен қарай оқы.</p><div class="flow"><div class="node start">БАСЫ</div>${t.steps.map((s,i)=>`<div class="arrow">↓</div><div class="node">${i+1}. ${s}</div>`).join("")}<div class="arrow">↓</div><div class="node start">СОҢЫ</div></div>`;
+ if(active===2) buildOrder(t);
+ if(active===3) buildDebug(t);
+ if(active===4) panel.innerHTML=`<h3>🔷 Ертегі блок-схемасы</h3><div class="legend"><div><div class="shape">⬭</div><b>Басы / Соңы</b></div><div><div class="shape">▭</div><b>Әрекет</b></div><div><div class="shape">◇</div><b>Шарт</b></div><div><div class="shape">↓</div><b>Бағыт</b></div></div><hr><div class="flow"><div class="node start">Басы</div><div class="arrow">↓</div><div class="node">${t.steps[0]}</div><div class="arrow">↓</div><div class="node decision">Келесі әрекет қажет пе?</div><div class="arrow">↓ Иә</div><div class="node">${t.steps[1]}</div><div class="arrow">↓</div><div class="node">Нәтиже: ${t.steps[t.steps.length-1]}</div><div class="arrow">↓</div><div class="node start">Соңы</div></div>`;
+ if(active===5) buildGuess();
+ if(active===6) buildMissing(t);
+}
+function shuffle(a){return [...a].sort(()=>Math.random()-.5)}
+function buildOrder(t){let arr=shuffle(t.steps);panel.innerHTML=`<h3>🧩 Алгоритмді өзің құрастыр</h3><p>Қадамды басып таңда, содан кейін ↑ немесе ↓ арқылы орнын ауыстыр.</p><div id="order" class="steps">${arr.map((s,i)=>`<div class="step" onclick="selectStep(this)">${s}</div>`).join("")}</div><div class="controls"><button class="action" onclick="move(-1)">↑ Жоғары</button><button class="action" onclick="move(1)">↓ Төмен</button><button class="action secondary" onclick="checkOrder()">✓ Тексеру</button></div><div id="msg"></div>`}
+let selected=null;
+function selectStep(el){document.querySelectorAll(".step").forEach(x=>x.classList.remove("selected"));el.classList.add("selected");selected=el}
+function move(d){if(!selected)return;let p=selected.parentNode;let kids=[...p.children],i=kids.indexOf(selected),j=i+d;if(j<0||j>=kids.length)return;if(d<0)p.insertBefore(selected,kids[j]);else p.insertBefore(kids[j],selected)}
+function checkOrder(){let got=[...document.querySelectorAll("#order .step")].map(x=>x.textContent);let ok=got.every((x,i)=>x===tales[current].steps[i]);msg.className="msg "+(ok?"good":"bad");msg.textContent=ok?"🎉 Жарайсың! Алгоритм дұрыс құрылды!":"🔄 Әлі дұрыс емес. Қадамдардың ретін қайта ойлан!"}
+function buildDebug(t){let wrong=[...t.steps];let k=Math.min(2,wrong.length-1);wrong[k]="❌ Кейіпкер оқиғаға қатысы жоқ әрекет жасады";panel.innerHTML=`<h3>🐞 Қате алгоритмді тап</h3><p>Қате қадамды басып тап. Бұл — <b>debugging</b>, яғни қатені табу және түзету.</p><div class="steps">${wrong.map((s,i)=>`<button class="choice" onclick="debugPick(${i},${k},this)">${i+1}. ${s}</button>`).join("")}</div><div id="msg"></div>`}
+function debugPick(i,k,el){if(i===k){el.textContent=(i+1)+". "+tales[current].steps[i]+" ✓";msg.className="msg good";msg.textContent="🐞 Қатені таптың және түзеттің! Тамаша debugging!"}else{msg.className="msg bad";msg.textContent="Бұл қадам дұрыс. Тағы іздеп көр!"}}
+function buildGuess(){let t=tales[current], clues=t.steps.slice(0,3);let opts=shuffle(tales.map((x,i)=>({n:x.title,i}))).slice(0,4);if(!opts.some(x=>x.i===current))opts[0]={n:t.title,i:current};panel.innerHTML=`<h3>🔍 Ертегіні тап</h3><p>Алгоритм қадамдарына қарап ертегіні анықта:</p><div class="summary">${clues.map((x,i)=>`${i+1}. ${x}`).join("<br>")}</div><div class="quiz">${shuffle(opts).map(o=>`<button class="choice" onclick="guess(${o.i})">${o.n}</button>`).join("")}</div><div id="msg"></div>`}
+function guess(i){msg.className="msg "+(i===current?"good":"bad");msg.textContent=i===current?"🎉 Дұрыс! Ертегіні алгоритмінен таныдың!":"🤔 Бұл басқа ертегі. Қадамдарға қайта қара!"}
+function buildMissing(t){let k=Math.min(3,t.steps.length-2), answer=t.steps[k];let distract=tales[(current+1)%tales.length].steps[2];let opts=shuffle([answer,distract,"Кейіпкер еш әрекет жасамады"]);panel.innerHTML=`<h3>❓ Жоғалған қадам</h3><p>Алгоритмдегі ❓ орнына дұрыс әрекетті таңда.</p><div class="flow"><div class="node">${t.steps[k-1]}</div><div class="arrow">↓</div><div class="node">❓ ЖОҒАЛҒАН ҚАДАМ</div><div class="arrow">↓</div><div class="node">${t.steps[k+1]}</div></div><div class="quiz">${opts.map((x)=>`<button class="choice" onclick="missing(this,${JSON.stringify(answer)})">${x}</button>`).join("")}</div><div id="msg"></div>`}
+function missing(el,answer){let ok=el.textContent===answer;msg.className="msg "+(ok?"good":"bad");msg.textContent=ok?"⭐ Дұрыс! Жоғалған қадам табылды!":"Қайта ойлан: алдыңғы және келесі оқиғаны байланыстыр."}
+init();
+</script>
+</body></html>
